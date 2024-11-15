@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{/layout.html}" lang="en">
+<head></head>
+<body>
+<div layout:fragment="contents">
+    <section class="paymentRequestsReceived">
+        <h2>People that you owe</h2>
+        <p th:id="no_payment_requests_received" th:if="${#lists.isEmpty(paymentRequestsReceived)}">You don't owe anyone anything!</p>
+    </section>
+
+    <div th:id="receivedRequest" th:unless="${#lists.isEmpty(paymentRequestsReceived)}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Who</th>
+                    <th>What</th>
+                    <th>Due In (days)</th>
+                    <th>How Much</th>
+                    <th></th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <th:block th:each="request : ${paymentRequestsReceived}">
+                    <tr>
+                        <td th:id="'name_' + ${request.id}" th:text="${request.expense.getPerson().getName()}">05/09/2022</td>
+                        <td th:id="'description_' + ${request.id}" th:text="${request.getDescription()}">Lunch</td>
+                        <td th:id="'due_date_' + ${request.id}" th:text="${request.daysLeftToPay()}">1</td>
+                        <td th:id="'amount_' + ${request.id}" th:text="${request.amountToPay}">ZAR 0</td>
+                        <td>
+                            <span th:if="${request.paid}" id = "paid_1" style="background-color: rgb(53, 177, 53); color: white; padding: 0.2em; border-radius: 0.3em;">✓</span>
+                            <span th:unless="${request.paid}">
+                                <form action="/payment.action" method="post">
+                                    <input type="hidden" name="requestId" th:value="${request.id}"/>
+                                    <input id="submit" type="submit" value="Pay" style="background-color:  rgb(53, 177, 53);"/>
+                                </form>
+                            </span>
+                        </td>
+                    </tr>
+                </th:block>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="3" style="font-weight: bold;">Total Unpaid:</td>
+                <td th:id="grand_total" th:text="${totalAmountOwed}">ZAR 0</td>
+            </tr>
+            </tfoot>
+        </table>
+        </div>
+</div>
+</body>
+</html>
